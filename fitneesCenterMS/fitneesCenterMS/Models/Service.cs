@@ -8,11 +8,11 @@ namespace fitneesCenterMS.Models
 
         [Required(ErrorMessage = "Hizmet adı zorunludur.")]
         [Display(Name = "Hizmet Adı")]
-        public string Name { get; set; } // Örn: Pilates Seansı
+        public string Name { get; set; } 
 
         [Required]
         [Display(Name = "Süre (Dakika)")]
-        public int DurationMinutes { get; set; } // Örn: 60
+        public int DurationMinutes { get; set; } 
 
         [Required]
         [Display(Name = "Ücret")]

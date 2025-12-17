@@ -1,4 +1,4 @@
-using fitneesCenterMS.Data;
+﻿using fitneesCenterMS.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +11,28 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = false; // Sayı zorunluluğu yok
+    options.Password.RequireLowercase = false; // Küçük harf zorunluluğu yok
+    options.Password.RequireNonAlphanumeric = false; // Sembol (!, @ vs) zorunluluğu yok
+    options.Password.RequireUppercase = false; // Büyük harf zorunluluğu yok
+    options.Password.RequiredLength = 3; 
+});
+
+
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await fitneesCenterMS.Data.DbSeeder.SeedRolesAndAdminAsync(services);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

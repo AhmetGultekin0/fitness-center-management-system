@@ -23,6 +23,6 @@ namespace fitneesCenterMS.Models
         public int ServiceId { get; set; }
         public Service Service { get; set; }
 
-        public string Status { get; set; } = "Bekliyor"; // Varsayılan değer
+        public string Status { get; set; } = "Bekliyor"; 
     }
 }

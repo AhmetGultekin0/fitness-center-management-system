@@ -11,7 +11,7 @@ namespace fitneesCenterMS.Models
         public string FullName { get; set; }
 
         [Display(Name = "Uzmanlık Alanı")]
-        public string Specialization { get; set; } // Örn: Fitness, Yoga
+        public string Specialization { get; set; } 
 
         [Display(Name = "Fotoğraf")]
         public string ImageUrl { get; set; }
