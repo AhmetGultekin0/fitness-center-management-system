@@ -17,10 +17,10 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    options.Password.RequireDigit = false; // Sayı zorunluluğu yok
-    options.Password.RequireLowercase = false; // Küçük harf zorunluluğu yok
-    options.Password.RequireNonAlphanumeric = false; // Sembol (!, @ vs) zorunluluğu yok
-    options.Password.RequireUppercase = false; // Büyük harf zorunluluğu yok
+    options.Password.RequireDigit = false; 
+    options.Password.RequireLowercase = false; 
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 3; 
 });
 
