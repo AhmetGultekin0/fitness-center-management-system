@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "AI Antrenör";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3>🤖 Yapay Zeka Antrenörün</h3>
+                </div>
+                <div class="card-body">
+                    <p>Bilgilerini gir, yapay zeka sana özel tavsiyeler versin!</p>
+
+                    <form id="aiForm">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label>Yaş</label>
+                                <input type="number" name="age" class="form-control" required placeholder="22">
+                            </div>
+                            <div class="col">
+                                <label>Kilo (kg)</label>
+                                <input type="number" name="weight" class="form-control" required placeholder="75">
+                            </div>
+                            <div class="col">
+                                <label>Boy (cm)</label>
+                                <input type="number" name="height" class="form-control" required placeholder="180">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Hedefin Nedir?</label>
+                            <select name="goal" class="form-select">
+                                <option>Kilo Vermek</option>
+                                <option>Kas Kütlesi Kazanmak</option>
+                                <option>Daha Fit Olmak</option>
+                                <option>Kondisyon Artırmak</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100" id="btnAsk">
+                            Tavsiye Al 🚀
+                        </button>
+                    </form>
+
+                    <div id="resultArea" class="mt-4 p-3 border rounded bg-light" style="display:none;">
+                        <div class="text-center" id="loadingSpinner">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p>Yapay zeka düşünüyor...</p>
+                        </div>
+                        <div id="aiContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $("#aiForm").submit(function (e) {
+            e.preventDefault(); 
+
+            var formData = $(this).serialize(); 
+
+            $("#resultArea").show();
+            $("#loadingSpinner").show();
+            $("#aiContent").hide();
+            $("#btnAsk").prop("disabled", true);
+
+            $.post("/AI/GetAdvice", formData, function (data) {
+                $("#loadingSpinner").hide();
+                $("#aiContent").html(data).fadeIn();
+                $("#btnAsk").prop("disabled", false);
+            });
+        });
+    </script>
+}

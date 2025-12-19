@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Yönetim Raporları";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">📊 Yönetim Paneli ve İstatistikler</h2>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3 shadow" style="max-width: 18rem;">
+                <div class="card-header">Toplam Üye</div>
+                <div class="card-body">
+                    <h1 class="card-title text-center">@ViewBag.TotalMembers</h1>
+                    <p class="card-text text-center"><i class="bi bi-people-fill"></i> Kişi Kayıtlı</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3 shadow" style="max-width: 18rem;">
+                <div class="card-header">Toplam Randevu</div>
+                <div class="card-body">
+                    <h1 class="card-title text-center">@ViewBag.TotalAppointments</h1>
+                    <p class="card-text text-center"><i class="bi bi-calendar-check"></i> Adet İşlem</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3 shadow" style="max-width: 18rem;">
+                <div class="card-header">Yıldız Antrenör ⭐</div>
+                <div class="card-body">
+                    <h4 class="card-title text-center">@ViewBag.TopTrainerName</h4>
+                    <p class="card-text text-center">@ViewBag.TopTrainerCount Randevu ile Zirvede!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3 shadow" style="max-width: 18rem;">
+                <div class="card-header">Favori Hizmet 🔥</div>
+                <div class="card-body">
+                    <h4 class="card-title text-center">@ViewBag.TopServiceName</h4>
+                    <p class="card-text text-center">@ViewBag.TopServiceCount Kez Seçildi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-secondary mt-4">
+        <strong>💡 Bilgi:</strong> Bu veriler anlık olarak veritabanından LINQ sorguları ile çekilmektedir.
+    </div>
+</div>
