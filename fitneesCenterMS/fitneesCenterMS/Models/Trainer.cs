@@ -16,6 +16,6 @@ namespace fitneesCenterMS.Models
         [Display(Name = "Fotoğraf")]
         public string ImageUrl { get; set; }
 
-        public ICollection<Appointment> Appointments { get; set; }
+        public ICollection<Appointment>? Appointments { get; set; }
     }
 }

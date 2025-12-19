@@ -18,6 +18,6 @@ namespace fitneesCenterMS.Models
         [Display(Name = "Ücret")]
         public decimal Price { get; set; }
 
-        public ICollection<Appointment> Appointments { get; set; }
+        public ICollection<Appointment>? Appointments { get; set; }
     }
 }

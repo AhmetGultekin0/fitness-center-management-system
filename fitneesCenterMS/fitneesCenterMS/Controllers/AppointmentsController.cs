@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using fitneesCenterMS.Data;
+using fitneesCenterMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using fitneesCenterMS.Data;
-using fitneesCenterMS.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace fitneesCenterMS.Controllers
 {
@@ -48,9 +49,10 @@ namespace fitneesCenterMS.Controllers
         }
 
         // GET: Appointments/Create
+
+        [Authorize]
         public IActionResult Create()
         {
-            ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["ServiceId"] = new SelectList(_context.Services, "Id", "Name");
             ViewData["TrainerId"] = new SelectList(_context.Trainers, "Id", "FullName");
             return View();
@@ -61,15 +63,53 @@ namespace fitneesCenterMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,AppointmentDate,MemberId,TrainerId,ServiceId,Status")] Appointment appointment)
+        [Authorize]
+        public async Task<IActionResult> Create([Bind("Id,AppointmentDate,TrainerId,ServiceId")] Appointment appointment)
         {
+            
+            var userEmail = User.Identity.Name;
+            var user = _context.Users.FirstOrDefault(u => u.Email == userEmail);
+            if (user != null)
+            {
+                appointment.MemberId = user.Id;
+            }
+
+            
+            if (appointment.AppointmentDate < DateTime.Now)
+            {
+                ModelState.AddModelError("AppointmentDate", "Geçmiş bir tarihe randevu alamazsınız.");
+            }
+
+            
+            bool isBooked = _context.Appointments.Any(a =>
+                a.TrainerId == appointment.TrainerId &&
+                a.AppointmentDate.Year == appointment.AppointmentDate.Year &&
+                a.AppointmentDate.Month == appointment.AppointmentDate.Month &&
+                a.AppointmentDate.Day == appointment.AppointmentDate.Day &&
+                a.AppointmentDate.Hour == appointment.AppointmentDate.Hour &&
+                a.AppointmentDate.Minute == appointment.AppointmentDate.Minute);
+
+            if (isBooked)
+            {
+                ModelState.AddModelError("AppointmentDate", "DİKKAT: Seçtiğiniz antrenör bu saatte zaten dolu!");
+            }
+
+            
+            ModelState.Remove("MemberId");
+            ModelState.Remove("Member");
+            ModelState.Remove("Trainer");
+            ModelState.Remove("Service");
+            
+
+           
             if (ModelState.IsValid)
             {
+                appointment.Status = "Onay Bekliyor";
                 _context.Add(appointment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", appointment.MemberId);
+
             ViewData["ServiceId"] = new SelectList(_context.Services, "Id", "Name", appointment.ServiceId);
             ViewData["TrainerId"] = new SelectList(_context.Trainers, "Id", "FullName", appointment.TrainerId);
             return View(appointment);
