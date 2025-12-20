@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace fitneesCenterMS.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    
     public class TrainersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -46,6 +46,8 @@ namespace fitneesCenterMS.Controllers
         }
 
         // GET: Trainers/Create
+
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -56,6 +58,7 @@ namespace fitneesCenterMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,FullName,Specialization,ImageUrl")] Trainer trainer)
         {
             if (ModelState.IsValid)
@@ -68,6 +71,7 @@ namespace fitneesCenterMS.Controllers
         }
 
         // GET: Trainers/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -88,6 +92,7 @@ namespace fitneesCenterMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Specialization,ImageUrl")] Trainer trainer)
         {
             if (id != trainer.Id)
@@ -119,6 +124,7 @@ namespace fitneesCenterMS.Controllers
         }
 
         // GET: Trainers/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -139,6 +145,7 @@ namespace fitneesCenterMS.Controllers
         // POST: Trainers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var trainer = await _context.Trainers.FindAsync(id);

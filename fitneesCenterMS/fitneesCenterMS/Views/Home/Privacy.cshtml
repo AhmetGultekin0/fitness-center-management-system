@@ -1,6 +1,46 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Gizlilik Politikası";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-dark text-white">
+            <h2>🔒 Gizlilik Politikası ve Aydınlatma Metni</h2>
+        </div>
+        <div class="card-body">
+            <p class="lead">SAU Fitness Center olarak üyelerimizin gizliliğine önem veriyoruz. Bu proje kapsamında verilerinizin nasıl işlendiği aşağıda açıklanmıştır.</p>
+            <hr />
+
+            <h4>1. Toplanan Veriler</h4>
+            <p>Sistemimize kayıt olurken ve hizmetlerimizden yararlanırken şu verileriniz işlenmektedir:</p>
+            <ul>
+                <li>Ad, Soyad ve İletişim bilgileri.</li>
+                <li>Antrenman programı oluşturmak için girilen <strong>Boy, Kilo ve Yaş</strong> bilgileri.</li>
+                <li>Randevu geçmişiniz ve eğitmen tercihleriniz.</li>
+            </ul>
+
+            <h4 class="mt-4">2. Yapay Zeka (AI) Kullanımı Hakkında 🤖</h4>
+            <div class="alert alert-info">
+                <strong>Önemli Bilgilendirme:</strong> Sitemizdeki "AI Antrenör" hizmeti, size özel program hazırlamak için <strong>Google Gemini API</strong> altyapısını kullanmaktadır.
+            </div>
+            <p>
+                AI Antrenör sayfasında girdiğiniz fiziksel veriler (boy, kilo, yaş), sadece o anki tavsiyeyi üretmek amacıyla anonim olarak yapay zeka servisine gönderilir ve veritabanımızda kalıcı olarak <u>saklanmaz</u>.
+            </p>
+
+            <h4 class="mt-4">3. Çerezler (Cookies)</h4>
+            <p>Oturum açma işlemlerinizin güvenliği ve sizi hatırlayabilmemiz için tarayıcınızda zorunlu çerezler kullanılmaktadır.</p>
+
+            <h4 class="mt-4">4. İletişim</h4>
+            <p>Herhangi bir sorunuz için bizimle iletişime geçebilirsiniz:</p>
+            <address>
+                <strong>SAU Fitness Center Yönetimi</strong><br>
+                Esentepe Kampüsü, Serdivan / Sakarya<br>
+                <a href="mailto:admin@sau.edu.tr">admin@sau.edu.tr</a>
+            </address>
+
+            <div class="text-muted mt-5 text-end">
+                <small>Son Güncelleme: @DateTime.Now.ToString("dd MMMM yyyy")</small>
+            </div>
+        </div>
+    </div>
+</div>

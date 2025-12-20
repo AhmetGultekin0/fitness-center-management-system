@@ -212,5 +212,17 @@ namespace fitneesCenterMS.Controllers
         {
             return _context.Appointments.Any(e => e.Id == id);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTakenSlots(int trainerId, DateTime date)
+        {
+            var appointments = await _context.Appointments
+                .Where(a => a.TrainerId == trainerId && a.AppointmentDate.Date == date.Date)
+                .ToListAsync();
+
+            var takenHours = appointments.Select(a => a.AppointmentDate.Hour).ToList();
+
+            return Json(takenHours);
+        }
     }
 }

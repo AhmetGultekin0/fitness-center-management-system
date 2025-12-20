@@ -14,7 +14,7 @@ namespace fitneesCenterMS.Models
         public string Specialization { get; set; } 
 
         [Display(Name = "Fotoğraf")]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         public ICollection<Appointment>? Appointments { get; set; }
     }
