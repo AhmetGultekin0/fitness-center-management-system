@@ -55,6 +55,9 @@
                         <div class="mb-3">
                             <label asp-for="ServiceId" class="form-label fw-bold">Hizmet Seç</label>
                             <select asp-for="ServiceId" class="form-control form-select" asp-items="ViewBag.ServiceId"></select>
+                            <div class="alert alert-success mt-2 d-none" id="priceAlert">
+                                <strong>Tahmini Tutar:</strong> <span id="priceLabel">0</span>
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -112,7 +115,7 @@
                     container.empty();
 
                     for (let i = startHour; i <= endHour; i++) {
-                        let isTaken = takenHours.includes(i); // Saat dolu mu?
+                        let isTaken = takenHours.includes(i);
                         let timeLabel = `${i}:00 - ${i + 1}:00`;
 
                         let btnClass = isTaken ? "btn-outline-danger disabled" : "btn-outline-primary time-slot";
@@ -136,8 +139,8 @@
 
             $("#trainerSelect, #datePicker").change(function () {
                 loadTimeSlots();
-                $("#btnSave").prop("disabled", true); // Seçim sıfırlandığı için butonu kapat
-                $("#finalDateTime").val(""); // Gizli tarihi temizle
+                $("#btnSave").prop("disabled", true); 
+                $("#finalDateTime").val(""); 
             });
 
             $(document).on("click", ".time-slot", function () {
@@ -153,6 +156,19 @@
 
                 $("#btnSave").prop("disabled", false);
             });
+
+            $("#ServiceId").change(function() {
+
+                var text = $("#ServiceId option:selected").text();
+                var match = text.match(/\((\d+)\s?₺\)/);
+                if (match) {
+                    $("#priceLabel").text(match[0]);
+                    $("#priceAlert").removeClass("d-none");
+                } else {
+                    $("#priceAlert").addClass("d-none");
+                }
+            });
+
         });
     </script>
 }

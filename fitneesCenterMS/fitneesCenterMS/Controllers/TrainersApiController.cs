@@ -17,18 +17,18 @@ namespace fitneesCenterMS.Controllers
         }
 
         // GET: api/TrainersApi
-        // Tüm antrenörleri getirir
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetTrainers()
         {
-            // LINQ ile sadece ihtiyacımız olan verileri seçiyoruz (Select)
+            
             var trainers = await _context.Trainers
                 .Select(t => new
                 {
                     t.Id,
                     t.FullName,
                     t.Specialization,
-                    TotalAppointments = t.Appointments.Count() // Toplam randevu sayısı
+                    TotalAppointments = t.Appointments.Count() 
                 })
                 .ToListAsync();
 
@@ -36,12 +36,12 @@ namespace fitneesCenterMS.Controllers
         }
 
         // GET: api/TrainersApi/Filter/Fitness
-        // Uzmanlık alanına göre filtreler (Hocanın istediği LINQ Filtreleme Şartı)
+        
         [HttpGet("Filter/{specialization}")]
         public async Task<ActionResult<IEnumerable<object>>> GetTrainersBySpec(string specialization)
         {
             var trainers = await _context.Trainers
-                .Where(t => t.Specialization.Contains(specialization)) // LINQ Filtreleme
+                .Where(t => t.Specialization.Contains(specialization)) 
                 .Select(t => new
                 {
                     t.Id,

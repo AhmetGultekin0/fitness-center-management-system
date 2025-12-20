@@ -1,55 +1,64 @@
 ﻿@{
-    ViewData["Title"] = "AI Antrenör";
+    ViewData["Title"] = "AI Antrenör & Görselleştirme";
 }
 
-<div class="container mt-5">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3>🤖 Yapay Zeka Antrenörün</h3>
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white text-center py-4">
+                    <h1 class="mb-0"><i class="bi bi-robot"></i> AI Antrenör & Vizyon</h1>
+                    <p class="mb-0 mt-2 opacity-75">Hedefini söyle, hem tavsiye al hem de hayalindeki vücudu gör!</p>
                 </div>
-                <div class="card-body">
-                    <p>Bilgilerini gir, yapay zeka sana özel tavsiyeler versin!</p>
+                <div class="card-body p-4">
 
-                    <form id="aiForm">
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label>Yaş</label>
-                                <input type="number" name="age" class="form-control" required placeholder="22">
-                            </div>
-                            <div class="col">
-                                <label>Kilo (kg)</label>
-                                <input type="number" name="weight" class="form-control" required placeholder="75">
-                            </div>
-                            <div class="col">
-                                <label>Boy (cm)</label>
-                                <input type="number" name="height" class="form-control" required placeholder="180">
+                    <div class="row">
+                        <div class="col-md-5 border-end">
+                            <form id="aiForm">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Yaş</label>
+                                    <input type="number" id="age" class="form-control" value="22" required>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label class="form-label fw-bold">Kilo (kg)</label>
+                                        <input type="number" id="weight" class="form-control" value="75" required>
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label fw-bold">Boy (cm)</label>
+                                        <input type="number" id="height" class="form-control" value="180" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Hedefin Ne?</label>
+                                    <textarea id="goal" class="form-control" rows="3" placeholder="Örn: Karın kaslarım olsun, plaj vücudu istiyorum, devasa kollar..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-warning w-100 fw-bold py-2 shadow-sm">
+                                    <i class="bi bi-magic"></i> ANALİZ ET VE ÇİZ
+                                </button>
+                            </form>
+
+                            <div id="loading" class="text-center mt-4 d-none">
+                                <div class="spinner-border text-warning" role="status"></div>
+                                <p class="mt-2 text-muted">Yapay zeka düşünüyor ve çiziyor...</p>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label>Hedefin Nedir?</label>
-                            <select name="goal" class="form-select">
-                                <option>Kilo Vermek</option>
-                                <option>Kas Kütlesi Kazanmak</option>
-                                <option>Daha Fit Olmak</option>
-                                <option>Kondisyon Artırmak</option>
-                            </select>
-                        </div>
+                        <div class="col-md-7">
+                            <div class="card bg-light border-0 mb-3 text-center" style="min-height: 300px; display: flex; align-items: center; justify-content: center;">
+                                <img id="generatedImage" src="https://via.placeholder.com/600x400?text=AI+Gorseli+Burada+Olacak"
+                                     class="img-fluid rounded shadow" style="max-height: 400px; display: none;" />
+                                <p id="imgPlaceholder" class="text-muted">Henüz bir analiz yapmadınız.</p>
+                            </div>
 
-                        <button type="submit" class="btn btn-success w-100" id="btnAsk">
-                            Tavsiye Al 🚀
-                        </button>
-                    </form>
-
-                    <div id="resultArea" class="mt-4 p-3 border rounded bg-light" style="display:none;">
-                        <div class="text-center" id="loadingSpinner">
-                            <div class="spinner-border text-primary" role="status"></div>
-                            <p>Yapay zeka düşünüyor...</p>
+                            <div id="adviceBox" class="alert alert-secondary border-0 shadow-sm" style="display:none;">
+                                <h4 class="alert-heading"><i class="bi bi-card-text"></i> Koçun Tavsiyesi:</h4>
+                                <hr>
+                                <div id="adviceContent"></div>
+                            </div>
                         </div>
-                        <div id="aiContent"></div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -59,19 +68,42 @@
 @section Scripts {
     <script>
         $("#aiForm").submit(function (e) {
-            e.preventDefault(); 
+            e.preventDefault();
 
-            var formData = $(this).serialize(); 
+            $("#loading").removeClass("d-none");
+            $("#adviceBox, #generatedImage").hide();
+            $("#imgPlaceholder").show().text("Resim oluşturuluyor...");
 
-            $("#resultArea").show();
-            $("#loadingSpinner").show();
-            $("#aiContent").hide();
-            $("#btnAsk").prop("disabled", true);
+            $("button[type=submit]").prop("disabled", true);
 
-            $.post("/AI/GetAdvice", formData, function (data) {
-                $("#loadingSpinner").hide();
-                $("#aiContent").html(data).fadeIn();
-                $("#btnAsk").prop("disabled", false);
+            var formData = {
+                age: $("#age").val(),
+                weight: $("#weight").val(),
+                height: $("#height").val(),
+                goal: $("#goal").val()
+            };
+
+            $.post("/AI/GetAdvice", formData, function (response) {
+
+                $("#adviceContent").html(response.advice);
+                $("#adviceBox").fadeIn();
+
+                
+                var randomSeed = Math.floor(Math.random() * 1000);
+                var imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(response.imagePrompt)}?width=600&height=400&nologo=true&seed=${randomSeed}&model=flux`;
+
+                $("#generatedImage").attr("src", imageUrl).on('load', function() {
+                    $("#imgPlaceholder").hide();
+                    $(this).fadeIn();
+                });
+
+                $("#loading").addClass("d-none");
+                $("button[type=submit]").prop("disabled", false);
+
+            }).fail(function() {
+                alert("Bir hata oluştu. Lütfen tekrar dene.");
+                $("#loading").addClass("d-none");
+                $("button[type=submit]").prop("disabled", false);
             });
         });
     </script>

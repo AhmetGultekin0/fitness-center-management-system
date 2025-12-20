@@ -53,8 +53,17 @@ namespace fitneesCenterMS.Controllers
         [Authorize]
         public IActionResult Create()
         {
-            ViewData["ServiceId"] = new SelectList(_context.Services, "Id", "Name");
+            
             ViewData["TrainerId"] = new SelectList(_context.Trainers, "Id", "FullName");
+            var serviceList = _context.Services
+                .Select(s => new
+                {
+                    Id = s.Id,
+                    Text = $"{s.Name} ({s.Price} ₺)"
+                })
+                .ToList();
+
+            ViewData["ServiceId"] = new SelectList(serviceList, "Id", "Text");
             return View();
         }
 
@@ -217,12 +226,40 @@ namespace fitneesCenterMS.Controllers
         public async Task<IActionResult> GetTakenSlots(int trainerId, DateTime date)
         {
             var appointments = await _context.Appointments
-                .Where(a => a.TrainerId == trainerId && a.AppointmentDate.Date == date.Date)
+                .Where(a => a.TrainerId == trainerId
+                         && a.AppointmentDate.Date == date.Date
+                         && a.Status != "Reddedildi ❌") 
                 .ToListAsync();
 
             var takenHours = appointments.Select(a => a.AppointmentDate.Hour).ToList();
 
             return Json(takenHours);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Approve(int id)
+        {
+            var appointment = await _context.Appointments.FindAsync(id);
+            if (appointment != null)
+            {
+                appointment.Status = "Onaylandı ";
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Reject(int id)
+        {
+            var appointment = await _context.Appointments.FindAsync(id);
+            if (appointment != null)
+            {
+                appointment.Status = "Reddedildi ";
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }

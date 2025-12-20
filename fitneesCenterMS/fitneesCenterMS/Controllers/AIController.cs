@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace fitneesCenterMS.Controllers
 {
@@ -10,10 +7,6 @@ namespace fitneesCenterMS.Controllers
     public class AIController : Controller
     {
         
-        private const string ApiKey = "****************";
-
-        
-        private const string ApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
 
         public IActionResult Index()
         {
@@ -23,60 +16,49 @@ namespace fitneesCenterMS.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAdvice(int age, int weight, int height, string goal)
         {
+            string advicePart = "";
+            string imagePromptPart = "fitness gym workout cinematic"; 
+
             try
             {
                 
-                string prompt = $"Yaş: {age}, Kilo: {weight}, Boy: {height}, Hedef: {goal}. Bu kişiye HTML formatında kısa spor ve beslenme tavsiyesi ver.";
 
-                var payload = new { contents = new[] { new { parts = new[] { new { text = prompt } } } } };
-                string jsonPayload = JsonSerializer.Serialize(payload);
-                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                string systemPrompt = $@"
+                    Rolün: Profesyonel ve motive edici bir Fitness Koçu.
+                    Kullanıcı Bilgileri: Yaş {age}, Kilo {weight}, Boy {height}, Hedef: '{goal}'.
+                    
+                    Lütfen cevabı TAM OLARAK şu formatta ver (Araya ||| işareti koyman zorunlu):
+                    
+                    [Buraya HTML formatında (<p>, <ul> etiketleri kullanarak) Türkçe kısa bir antrenman ve beslenme tavsiyesi yaz]
+                    |||
+                    [Buraya kullanıcının hedefi için İngilizce kısa görsel promptu yaz. Örn: muscular man in gym]
+                    ";
 
                 using (var httpClient = new HttpClient())
                 {
-                    var response = await httpClient.PostAsync(ApiUrl + ApiKey, content);
+                    var url = $"https://text.pollinations.ai/{Uri.EscapeDataString(systemPrompt)}?model=openai";
 
-                    if (response.IsSuccessStatusCode)
+                    var responseString = await httpClient.GetStringAsync(url);
+
+                    if (!string.IsNullOrEmpty(responseString))
                     {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        var jsonNode = JsonNode.Parse(responseString);
-                        string aiResponse = jsonNode?["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
+                        var parts = responseString.Split("|||");
 
-                        if (!string.IsNullOrEmpty(aiResponse))
+                        advicePart = parts[0].Trim();
+
+                        if (parts.Length > 1)
                         {
-                            
-                            return Content(aiResponse.Replace("```html", "").Replace("```", ""), "text/html");
+                            imagePromptPart = parts[1].Trim();
                         }
                     }
                 }
             }
             catch
             {
+                advicePart = "<div class='alert alert-warning'>Bağlantı zayıf ama pes etmek yok!</div><p>Bol protein, düzenli uyku ve sıkı antrenman. Halledersin! 💪</p>";
             }
 
-            string fakeAdvice = $@"
-                <div class='alert alert-warning'>⚠️ Not: AI Bağlantısı kurulamadı, offline moddasınız.</div>
-                <h3>Merhaba! Senin İçin Hazırladığım Program:</h3>
-                <p><strong>Profil Analizi:</strong> {age} yaşında, {weight}kg ve {height}cm boyundasın. VKE değerin yaklaşık: {(weight / ((height / 100.0) * (height / 100.0))):F1}</p>
-                <p><strong>Hedefin:</strong> {goal}</p>
-                <hr/>
-                <h4>🏃‍♂️ Egzersiz Planı:</h4>
-                <ul>
-                    <li>Haftada 3 gün tüm vücut (Full Body) antrenmanı yapmalısın.</li>
-                    <li>Her antrenman öncesi 10 dakika tempolu yürüyüş ile ısın.</li>
-                    <li>Squats, Push-ups ve Plank hareketlerine odaklan.</li>
-                </ul>
-                <h4>🥗 Beslenme İpuçları:</h4>
-                <ul>
-                    <li>Günde en az 2.5 litre su içmeyi ihmal etme.</li>
-                    <li>Protein ağırlıklı beslen (Yumurta, tavuk, balık).</li>
-                    <li>Şekerli içeceklerden uzak dur.</li>
-                </ul>
-                <div class='mt-3'><em>Başarılar dilerim! 💪</em></div>
-            ";
-
-            await Task.Delay(1000); 
-            return Content(fakeAdvice, "text/html");
+            return Json(new { advice = advicePart, imagePrompt = imagePromptPart });
         }
     }
 }
